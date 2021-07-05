@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/environment"
+
+app = CLI.new
+app.run
+
