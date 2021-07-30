@@ -1,15 +1,17 @@
 class CLI
 
-    attr_accessor :top, :bottom
+    attr_accessor :top, :bottom, :all
 
     def run
         welcome
         puts "Enter the path to the csv file of your gradebook: "
+        # if you've placed the csv in the same dir as this tool, you can just copy the relative path
         filename = gets.strip
+        # adds ./ to the beginning of the filname assuming you've place the file in the same dir as this tool
+        filename = './' + filename if filename[0..1] != './'
         puts "Enter your section (West, East A, East B, etc.): "
         section = gets.strip
         get_students(filename, section)
-        # students = SmarterCSV.process('./2021-07-02T1325_Grades-SENG-LIVE-062821-PHASE-1.csv')
 
         loop do
             menu
@@ -18,15 +20,27 @@ class CLI
     end
 
     def welcome
+        puts "\n/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/: \n \n"
         puts "Hi! I'll generate random groups of students for you!"
+        puts "You'll need to export your gradebook from Canvas as a CSV file"
+        puts "and save it in the same directory as this tool."
+        puts "(You might also need to use a CSV editor to normalize your data.)"
+        puts "\n/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/:/: \n \n"
     end
 
     def menu
         puts "How many students per group?"
         group_size = gets.strip.to_i
-        t, b = @top.clone, @bottom.clone
-        generate_groups(t, group_size)
-        generate_groups(b, group_size)
+        puts "Should groups be SORTED by percentage of labs completed? Y/(n)"
+        sorted = gets.strip
+        if sorted == "Y"
+            t, b = @top.clone, @bottom.clone
+            generate_groups(t, group_size)
+            generate_groups(b, group_size)
+        else
+            all = @all.clone
+            generate_groups(all, group_size)
+        end
     end
 
     def go_again
@@ -39,8 +53,8 @@ class CLI
 
     def get_students(filename, section)
         students = SmarterCSV.process(filename)
-        selected = students.select{|s| s[:section] == section}
-        sorted = selected.sort_by{|s| s[:unposted_final_score]}
+        @all = students.select{|s| s[:section] == section}
+        sorted = @all.sort_by{|s| s[:current_score]}
         @top, @bottom = sorted.each_slice( (sorted.size/2.0).round ).to_a
     end
 
@@ -52,7 +66,7 @@ class CLI
             if student
               last, first = student.values_at(:student)[0].split(",")
             else
-              last, first = ["n/a", "n/a"]
+              last, first = ["", "n/a"]
             end
             row += "| #{first.chomp} #{last.chomp} "
           end
