@@ -53,7 +53,7 @@ class CLI
 
     def get_students(filename, section)
         students = SmarterCSV.process(filename)
-        @all = students.select{|s| s[:section] == section}
+        @all = students.select{|s| s[:section].include? section}
         sorted = @all.sort_by{|s| s[:current_score]}
         @top, @bottom = sorted.each_slice( (sorted.size/2.0).round ).to_a
     end
