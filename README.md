@@ -10,7 +10,7 @@ And then execute:
 
     $ bundle install
 
-You may also want to have a CSV editing extension installed in VS Code.
+You may also want to have a CSV editing extension installed in VS Code, such as [Edit CSV](https://marketplace.visualstudio.com/items?itemName=janisdd.vscode-edit-csv).
 
 
 ## Usage
